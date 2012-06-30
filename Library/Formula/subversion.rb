@@ -43,6 +43,7 @@ class Subversion < Formula
   if ARGV.build_universal?
     depends_on RequiresUniversal.new('neon', 'libneon.dylib')
     depends_on RequiresUniversal.new('sqlite', 'libsqlite3.dylib')
+    depends_on RequiresUniversal.new('serf', 'libserf-1.dylib')
   end
 
   def options
