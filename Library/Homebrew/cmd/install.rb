@@ -17,6 +17,16 @@ module Homebrew extend self
       abort "Cowardly refusing to `sudo brew install'"
     end
 
+    if ARGV.formulae.length == 1
+        f = ARGV.formulae[0]
+        options = f.options
+        if !ARGV.include?('--default') && !options.empty? && STDIN.tty? && STDERR.tty? && (options.map {|a| a[0]} & ARGV - ['--universal']).empty?
+            onoe "#{f.name}: Pass --default to install with all of the below options disabled:"
+            f.options.each { |o| puts "#{o[0]}\n\t#{o[1]}" }
+            exit 1
+        end
+    end
+
     install_formulae ARGV.formulae
   end
 

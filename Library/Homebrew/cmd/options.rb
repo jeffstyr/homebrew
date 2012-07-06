@@ -28,6 +28,10 @@ module Homebrew extend self
           puts o[0]
           puts "\t"+o[1]
         end
+        if !(f.options.map {|a| a[0]}).include? '--default'
+          puts '--default'
+          puts "\t"+'Install with all of the above options disabled'
+        end
         puts
       end
     end
