@@ -66,10 +66,12 @@ if RUBY_PLATFORM =~ /darwin/
   MACOS_VERSION = /(10\.\d+)(\.\d+)?/.match(MACOS_FULL_VERSION).captures.first.to_f
   OS_VERSION = "Mac OS X #{MACOS_FULL_VERSION}"
   MACOS = true
+  SYSTEM_RUBY_HOME = '/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr'
 else
   MACOS_FULL_VERSION = MACOS_VERSION = 0
   OS_VERSION = RUBY_PLATFORM
   MACOS = false
+  SYSTEM_RUBY_HOME = '/usr'
 end
 
 HOMEBREW_USER_AGENT = "Homebrew #{HOMEBREW_VERSION} (Ruby #{RUBY_VERSION}-#{RUBY_PATCHLEVEL}; #{OS_VERSION})"
