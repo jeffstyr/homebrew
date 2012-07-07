@@ -40,6 +40,16 @@ class Subversion < Formula
   depends_on 'sqlite'
   depends_on 'serf'
 
+  # if zlib is installed and built appropriately, use it
+  begin
+    zlib = Formula.factory('zlib')
+    if zlib.installed? && (!ARGV.build_universal? || RequiresUniversal.new('zlib', 'libz.dylib').satisfied?)
+      depends_on zlib
+    end
+  rescue FormulaUnavailableError => e
+    # okay
+  end
+
   if ARGV.build_universal?
     depends_on RequiresUniversal.new('neon', 'libneon.dylib')
     depends_on RequiresUniversal.new('sqlite', 'libsqlite3.dylib')
@@ -95,7 +105,6 @@ class Subversion < Formula
     args = ["--disable-debug",
             "--prefix=#{prefix}",
             "--with-ssl",
-            "--with-zlib=/usr",
             "--with-sqlite=#{HOMEBREW_PREFIX}",
             "--with-serf=#{HOMEBREW_PREFIX}",
             # use our neon, not OS X's
