@@ -136,7 +136,7 @@ class Subversion < Formula
             "--without-berkeley-db"]
 
     args << "--enable-javahl" << "--without-jikes" if build_java?
-    args << "--with-ruby-sitedir=#{lib}/ruby" << "RUBY=/usr/bin/ruby" if build_ruby?
+    args << "--with-ruby-sitedir=#{lib}/ruby" << "RUBY=#{SYSTEM_RUBY_HOME}/bin/ruby" if build_ruby?
 
     # The system Python is built with llvm-gcc, so we override this
     # variable to prevent failures due to incompatible CFLAGS
@@ -162,14 +162,8 @@ class Subversion < Formula
         arches = "-arch x86_64"
       end
 
-      perl_core = Pathname.new(`perl -MConfig -e 'print $Config{archlib}'`)+'CORE'
-      unless perl_core.exist?
-        onoe "perl CORE directory does not exist in '#{perl_core}'"
-      end
-
       inreplace "Makefile" do |s|
-        s.change_make_var! "SWIG_PL_INCLUDES",
-          "$(SWIG_INCLUDES) #{arches} -g -pipe -fno-common -DPERL_DARWIN -fno-strict-aliasing -I/usr/local/include -I#{perl_core}"
+        s.gsub_make_var! "SWIG_PL_INCLUDES", /-arch\s+\S+/, "#{arches} "
       end
       system "make swig-pl"
       system "make install-swig-pl"
@@ -183,13 +177,11 @@ class Subversion < Formula
 
     if build_ruby?
       inreplace "Makefile" do |s|
-        ruby_libs = s.get_make_var "SWIG_RB_LIBS"
-        ruby_libs.gsub! /-lruby /, "-lruby.1 "
-        s.change_make_var! "SWIG_RB_LIBS", ruby_libs
+        s.gsub_make_var! "SWIG_RB_LIBS", /-lruby /, "-lruby.1 "
       end
 
       ENV.j1 # This build isn't parallel safe
-      system "make swig-rb EXTRA_SWIG_LDFLAGS=-L/usr/lib"
+      system "make swig-rb EXTRA_SWIG_LDFLAGS=-L#{SYSTEM_RUBY_HOME}/lib"
       system "make install-swig-rb"
     end
   end
