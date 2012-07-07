@@ -30,6 +30,13 @@ module StringInreplaceExtension
     opoo "inreplace: changing '#{flag}' to '#{new_value}' failed" if sub.nil?
   end
 
+  # Apply regex replacement to Makefile variable
+  def gsub_make_var! flag, match, replace
+    value = get_make_var flag
+    value.gsub! match, replace
+    change_make_var! flag, value
+  end
+
   # Removes variable assignments completely.
   def remove_make_var! flags
     # Next line is for Ruby 1.9.x compatibility
